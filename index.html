@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>ShahMultiplayer · PI Scanner</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════
+   THEMES — CSS Variables
+═══════════════════════════════════════════════════ */
+:root, [data-theme="dark"]{
+  --bg:#0b1220; --bg2:#0f172a; --card:#111c31; --card2:#1a2842; --border:#25344f;
+  --text:#e6edf7; --sub:#8fa3c0; --accent:#3b82f6; --accent2:#2563eb; --accentText:#fff;
+  --success:#22c55e; --danger:#ef4444; --warning:#f59e0b; --gold:#facc15;
+  --shadow:rgba(0,0,0,.45); --overlay:rgba(3,7,18,.75);
+}
+[data-theme="light"]{
+  --bg:#f1f5f9; --bg2:#e2e8f0; --card:#ffffff; --card2:#f8fafc; --border:#d5dde8;
+  --text:#0b1220; --sub:#5b6b83; --accent:#2563eb; --accent2:#1d4ed8; --accentText:#fff;
+  --success:#16a34a; --danger:#dc2626; --warning:#d97706; --gold:#ca8a04;
+  --shadow:rgba(15,23,42,.12); --overlay:rgba(15,23,42,.55);
+}
+[data-theme="ocean"]{
+  --bg:#062a3d; --bg2:#082f49; --card:#0a3a55; --card2:#0e4a68; --border:#155e75;
+  --text:#dff6ff; --sub:#7dd3fc; --accent:#06b6d4; --accent2:#0891b2; --accentText:#fff;
+  --success:#10b981; --danger:#f43f5e; --warning:#f59e0b; --gold:#fbbf24;
+  --shadow:rgba(0,0,0,.5); --overlay:rgba(2,20,30,.75);
+}
+
+/* ═══════════════════════════════════════════════════
+   BASE
+═══════════════════════════════════════════════════ */
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  background:var(--bg); color:var(--text);
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+  font-size:14px; line-height:1.5; overflow-x:hidden;
+  transition:background .25s ease, color .25s ease;
+}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input,select,textarea{font-family:inherit;font-size:14px;outline:none}
+a{color:var(--accent);text-decoration:none}
+img{max-width:100%;display:block}
+
+/* ═══════════════════════════════════════════════════
+   UTILITIES
+═══════════════════════════════════════════════════ */
+.hidden{display:none !important}
+.center{display:flex;align-items:center;justify-content:center}
+.mono{font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:.3px}
+
+/* ═══════════════════════════════════════════════════
+   LOGIN SCREEN
+═══════════════════════════════════════════════════ */
+#loginScreen{
+  min-height:100vh; display:flex; align-items:center; justify-content:center;
+  padding:24px; background:
+    radial-gradient(circle at 15% 20%, rgba(59,130,246,.18), transparent 45%),
+    radial-gradient(circle at 85% 80%, rgba(6,182,212,.14), transparent 45%),
+    var(--bg);
+}
+.login-card{
+  width:100%; max-width:400px; background:var(--card);
+  border:1px solid var(--border); border-radius:20px;
+  padding:32px 26px; box-shadow:0 20px 60px var(--shadow);
+  animation:fadeUp .5s ease;
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.login-brand{display:flex;flex-direction:column;align-items:center;gap:12px;margin-bottom:26px}
+.brand-logo{
+  width:64px;height:64px;border-radius:16px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-family:'Rajdhani',sans-serif;font-size:26px;font-weight:700;
+  letter-spacing:1px; box-shadow:0 10px 30px rgba(59,130,246,.35);
+}
+.brand-title{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;letter-spacing:.5px;color:var(--text)}
+.brand-sub{font-size:12px;color:var(--sub);letter-spacing:.5px;text-align:center}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:11px;font-weight:600;color:var(--sub);letter-spacing:1px;text-transform:uppercase;margin-bottom:7px}
+.field input, .field select{
+  width:100%; padding:13px 14px; background:var(--card2);
+  border:1.5px solid var(--border); border-radius:12px;
+  color:var(--text); font-size:15px; transition:border .15s ease;
+}
+.field input:focus, .field select:focus{border-color:var(--accent)}
+.field input::placeholder{color:var(--sub);opacity:.6}
+.primary-btn{
+  width:100%; padding:15px; border-radius:14px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  color:var(--accentText); font-family:'Rajdhani',sans-serif;
+  font-size:17px; font-weight:700; letter-spacing:1px;
+  box-shadow:0 10px 24px rgba(59,130,246,.3);
+  transition:transform .12s ease, box-shadow .15s ease;
+}
+.primary-btn:active{transform:scale(.98)}
+.primary-btn:disabled{opacity:.6;cursor:not-allowed}
+.login-hint{margin-top:18px;text-align:center;font-size:11px;color:var(--sub)}
+
+/* ═══════════════════════════════════════════════════
+   APP SHELL
+═══════════════════════════════════════════════════ */
+#mainApp{min-height:100vh;display:flex;flex-direction:column}
+
+.app-header{
+  position:sticky; top:0; z-index:50;
+  background:color-mix(in srgb, var(--bg2) 92%, transparent);
+  backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  display:flex; align-items:center; gap:12px;
+  padding:12px 14px;
+}
+.icon-btn{
+  width:40px;height:40px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--card); border:1px solid var(--border);
+  font-size:17px; transition:background .15s ease, transform .1s ease;
+}
+.icon-btn:active{transform:scale(.92)}
+.header-brand{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
+.brand-logo.sm{width:38px;height:38px;font-size:16px;border-radius:11px}
+.header-titles{min-width:0}
+.header-title{font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700;letter-spacing:.4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.header-sub{font-size:10px;color:var(--sub);letter-spacing:.6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.user-chip{
+  display:flex; align-items:center; gap:7px;
+  background:var(--card); border:1px solid var(--border);
+  border-radius:20px; padding:5px 12px 5px 5px;
+  font-size:12px; font-weight:600; max-width:150px;
+}
+.user-initial{
+  width:26px;height:26px;border-radius:50%;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  color:#fff;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:13px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.user-chip .uname{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ═══════════════════════════════════════════════════
+   DRAWER
+═══════════════════════════════════════════════════ */
+.drawer-backdrop{
+  position:fixed; inset:0; background:var(--overlay);
+  opacity:0; pointer-events:none; transition:opacity .25s ease; z-index:90;
+}
+body.drawer-open .drawer-backdrop{opacity:1;pointer-events:auto}
+.drawer{
+  position:fixed; top:0; left:0; bottom:0; width:280px;
+  background:var(--bg2); border-right:1px solid var(--border);
+  z-index:100; transform:translateX(-102%);
+  transition:transform .28s cubic-bezier(.2,.9,.3,1);
+  display:flex; flex-direction:column;
+}
+body.drawer-open .drawer{transform:translateX(0)}
+.drawer-head{padding:22px 20px 18px;border-bottom:1px solid var(--border)}
+.drawer-head .brand-logo{width:52px;height:52px;font-size:20px;margin-bottom:12px}
+.drawer-head .brand-title{font-size:18px}
+.drawer-head .brand-sub{font-size:11px;margin-top:2px}
+.drawer-nav{padding:14px 12px;flex:1;display:flex;flex-direction:column;gap:4px}
+.nav-item{
+  display:flex; align-items:center; gap:12px;
+  padding:12px 14px; border-radius:12px;
+  color:var(--sub); font-size:14px; font-weight:600;
+  text-align:left; transition:background .15s ease, color .15s ease;
+}
+.nav-item .nav-icon{font-size:18px;width:22px;text-align:center}
+.nav-item.active{background:var(--card2);color:var(--text)}
+.nav-item.active .nav-icon{filter:brightness(1.2)}
+.nav-item:active{transform:scale(.98)}
+.drawer-foot{padding:16px;border-top:1px solid var(--border)}
+.user-card{
+  display:flex;align-items:center;gap:11px;
+  padding:12px; background:var(--card); border-radius:12px;
+  border:1px solid var(--border); margin-bottom:10px;
+}
+.user-card .user-initial{width:36px;height:36px;font-size:15px}
+.user-card .u-name{font-weight:600;font-size:13px}
+.user-card .u-role{font-size:10px;color:var(--sub);letter-spacing:.5px}
+.logout-btn{
+  width:100%; padding:12px; border-radius:12px;
+  background:color-mix(in srgb, var(--danger) 14%, var(--card));
+  border:1px solid color-mix(in srgb, var(--danger) 40%, var(--border));
+  color:var(--danger); font-size:13px; font-weight:600;
+  display:flex; align-items:center; justify-content:center; gap:8px;
+}
+.logout-btn:active{transform:scale(.98)}
+
+/* ═══════════════════════════════════════════════════
+   MAIN CONTENT
+═══════════════════════════════════════════════════ */
+main{flex:1;padding:16px 14px 100px;max-width:900px;width:100%;margin:0 auto}
+.tab-panel{display:none;animation:fadeIn .25s ease}
+.tab-panel.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+.card{
+  background:var(--card); border:1px solid var(--border);
+  border-radius:16px; padding:16px; margin-bottom:14px;
+  transition:background .25s ease, border .25s ease;
+}
+.card-title{
+  font-family:'Rajdhani',sans-serif; font-size:14px; font-weight:700;
+  letter-spacing:1px; text-transform:uppercase; color:var(--sub);
+  margin-bottom:14px; display:flex; align-items:center; justify-content:space-between; gap:8px;
+}
+.card-title .chip{
+  background:var(--card2); border:1px solid var(--border);
+  padding:2px 9px; border-radius:20px; font-size:11px; color:var(--text);
+  letter-spacing:.5px; font-weight:600;
+}
+
+/* Form */
+.form-grid{display:grid;gap:12px}
+.form-grid.two{grid-template-columns:1fr 1fr}
+@media (max-width:520px){.form-grid.two{grid-template-columns:1fr}}
+.field-inline label{
+  display:block;font-size:10px;font-weight:700;color:var(--sub);
+  letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;
+}
+.field-inline input, .field-inline select{
+  width:100%;padding:12px 13px;background:var(--card2);
+  border:1.5px solid var(--border);border-radius:11px;
+  color:var(--text);font-size:14px;transition:border .15s ease;
+}
+.field-inline input[readonly]{opacity:.75;cursor:not-allowed}
+.field-inline select{cursor:pointer;appearance:none;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238fa3c0' stroke-width='2.4' stroke-linecap='round'><polyline points='6 9 12 15 18 9'/></svg>");
+  background-repeat:no-repeat;background-position:right 12px center;background-size:16px;padding-right:38px;
+}
+.field-inline input:focus, .field-inline select:focus{border-color:var(--accent)}
+
+/* Image grid */
+.image-grid{
+  display:grid; grid-template-columns:repeat(3,1fr); gap:10px;
+}
+@media (min-width:520px){.image-grid{grid-template-columns:repeat(5,1fr)}}
+.image-tile{
+  aspect-ratio:1; border-radius:14px; overflow:hidden;
+  position:relative; display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  background:var(--card2); border:1.5px dashed var(--border);
+  transition:all .15s ease;
+}
+.image-tile.filled{border-style:solid;border-color:var(--accent);cursor:pointer}
+.image-tile.filled img{width:100%;height:100%;object-fit:cover}
+.image-tile.add-tile{
+  border-style:dashed; border-color:var(--accent); color:var(--accent);
+  cursor:pointer;
+}
+.image-tile.add-tile:active{transform:scale(.96);background:color-mix(in srgb,var(--accent) 10%,var(--card2))}
+.add-plus{font-size:24px;font-weight:300;line-height:1}
+.add-lbl{font-size:10px;font-weight:700;letter-spacing:1px;margin-top:4px;text-transform:uppercase}
+.image-tile.empty{opacity:.35}
+.img-del{
+  position:absolute; top:6px; right:6px; width:24px; height:24px;
+  border-radius:50%; background:rgba(220,38,38,.92); color:#fff;
+  font-size:13px; font-weight:700; line-height:1;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 3px 8px rgba(0,0,0,.4);
+}
+.img-badge{
+  position:absolute; bottom:6px; left:6px;
+  background:rgba(0,0,0,.72); color:#fff; font-size:10px; font-weight:700;
+  padding:2px 7px; border-radius:20px; letter-spacing:.5px;
+}
+
+/* Save button */
+.save-bar{
+  position:fixed; bottom:0; left:0; right:0;
+  padding:12px 14px calc(12px + env(safe-area-inset-bottom));
+  background:linear-gradient(to top, var(--bg) 70%, transparent);
+  z-index:40;
+}
+.save-btn{
+  width:100%; max-width:900px; margin:0 auto; display:block;
+  padding:16px; border-radius:14px;
+  background:linear-gradient(135deg,var(--success),color-mix(in srgb,var(--success) 70%, #000));
+  color:#fff; font-family:'Rajdhani',sans-serif; font-size:18px; font-weight:700;
+  letter-spacing:1.2px; box-shadow:0 10px 26px rgba(34,197,94,.35);
+  transition:transform .12s ease;
+}
+.save-btn:active{transform:scale(.98)}
+.save-btn:disabled{opacity:.55;cursor:not-allowed}
+
+/* Data table */
+.refresh-row{display:flex;justify-content:flex-end;margin-bottom:10px}
+.refresh-btn{
+  padding:8px 14px;border-radius:10px;
+  background:var(--card2);border:1px solid var(--border);
+  color:var(--sub);font-size:12px;font-weight:600;
+}
+.refresh-btn:active{transform:scale(.96)}
+
+.data-card{
+  background:var(--card2); border:1px solid var(--border);
+  border-radius:14px; padding:14px; margin-bottom:12px;
+  animation:fadeIn .3s ease;
+}
+.dc-header{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:10px}
+.dc-name{font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700}
+.dc-id{font-size:10px;color:var(--sub);letter-spacing:.5px;margin-top:2px;font-family:monospace}
+.status-chip{
+  padding:4px 10px; border-radius:20px; font-size:10px; font-weight:700;
+  letter-spacing:.8px; text-transform:uppercase; flex-shrink:0;
+  background:color-mix(in srgb,var(--warning) 18%,transparent);
+  color:var(--warning); border:1px solid color-mix(in srgb,var(--warning) 40%,transparent);
+}
+.status-chip.done{background:color-mix(in srgb,var(--success) 18%,transparent);color:var(--success);border-color:color-mix(in srgb,var(--success) 40%,transparent)}
+.status-chip.error{background:color-mix(in srgb,var(--danger) 18%,transparent);color:var(--danger);border-color:color-mix(in srgb,var(--danger) 40%,transparent)}
+.dc-meta{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.meta-item{display:flex;flex-direction:column;gap:2px}
+.meta-lbl{font-size:9px;color:var(--sub);letter-spacing:.8px;text-transform:uppercase;font-weight:700}
+.meta-item span:last-child{font-size:12px;color:var(--text);font-weight:500;word-break:break-word}
+.dc-images{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.thumb-btn{
+  width:56px;height:56px;border-radius:10px;overflow:hidden;
+  background:var(--card);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;color:var(--sub);
+}
+.thumb-btn img{width:100%;height:100%;object-fit:cover}
+.thumb-btn:active{transform:scale(.94)}
+.no-img{font-size:11px;color:var(--sub);font-style:italic}
+.dc-links{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.link-btn{
+  padding:7px 12px;border-radius:9px;font-size:11px;font-weight:600;
+  background:var(--card);border:1px solid var(--border);color:var(--text);
+  display:inline-flex;align-items:center;gap:5px;
+}
+.link-btn:active{transform:scale(.96)}
+.empty-state{
+  padding:40px 20px;text-align:center;color:var(--sub);
+  font-size:13px;font-style:italic;
+}
+
+/* ═══════════════════════════════════════════════════
+   MODALS
+═══════════════════════════════════════════════════ */
+.modal{
+  position:fixed; inset:0; background:var(--overlay);
+  z-index:200; display:none; align-items:center; justify-content:center;
+  padding:20px; animation:fadeIn .2s ease;
+}
+.modal.active{display:flex}
+.modal-box{
+  width:100%; max-width:340px; background:var(--card);
+  border:1px solid var(--border); border-radius:18px;
+  padding:22px; box-shadow:0 24px 60px var(--shadow);
+  animation:popIn .25s cubic-bezier(.2,.9,.3,1.1);
+}
+@keyframes popIn{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
+.modal-title{
+  font-family:'Rajdhani',sans-serif; font-size:16px; font-weight:700;
+  letter-spacing:.5px; text-align:center; margin-bottom:16px;
+}
+.source-btn{
+  width:100%; padding:15px; border-radius:12px; margin-bottom:10px;
+  background:var(--card2); border:1.5px solid var(--border);
+  color:var(--text); font-size:14px; font-weight:600;
+  display:flex; align-items:center; gap:12px; text-align:left;
+}
+.source-btn:active{transform:scale(.98); border-color:var(--accent)}
+.source-btn .s-icon{
+  width:38px;height:38px;border-radius:10px;
+  background:color-mix(in srgb,var(--accent) 14%, transparent);
+  display:flex;align-items:center;justify-content:center;font-size:18px;
+}
+.source-btn .s-txt{flex:1}
+.source-btn .s-sub{font-size:11px;color:var(--sub);font-weight:400;margin-top:2px}
+.modal-cancel{
+  width:100%; padding:12px; border-radius:12px; margin-top:6px;
+  color:var(--sub); font-size:13px; font-weight:600;
+  background:transparent;
+}
+
+/* Image viewer */
+.image-viewer{background:rgba(0,0,0,.95);align-items:center;justify-content:center;flex-direction:column;gap:16px}
+.image-viewer img{max-width:100%;max-height:75vh;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,.8)}
+.iv-close{position:absolute;top:20px;right:20px;width:44px;height:44px;border-radius:50%;
+  background:rgba(255,255,255,.12);color:#fff;font-size:20px;
+  display:flex;align-items:center;justify-content:center}
+.iv-open{
+  padding:12px 20px;border-radius:12px;
+  background:var(--accent);color:#fff;font-size:14px;font-weight:600;
+}
+
+/* Toast */
+#toastWrap{
+  position:fixed; top:78px; left:50%; transform:translateX(-50%);
+  z-index:300; display:flex; flex-direction:column; gap:8px;
+  width:calc(100% - 32px); max-width:400px; pointer-events:none;
+}
+.toast{
+  padding:12px 16px; border-radius:12px;
+  background:var(--card); border:1px solid var(--border);
+  box-shadow:0 12px 30px var(--shadow);
+  font-size:13px; font-weight:500; color:var(--text);
+  display:flex; align-items:center; gap:10px;
+  animation:toastIn .25s cubic-bezier(.2,.9,.3,1.1);
+  pointer-events:auto;
+}
+@keyframes toastIn{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
+.toast.out{animation:toastOut .2s ease forwards}
+@keyframes toastOut{to{opacity:0;transform:translateY(-8px)}}
+.toast::before{content:'';width:6px;height:6px;border-radius:50%;flex-shrink:0;background:var(--sub)}
+.toast.success::before{background:var(--success)}
+.toast.error::before{background:var(--danger)}
+.toast.info::before{background:var(--accent)}
+
+/* Global overlay loader */
+#loader{
+  position:fixed; inset:0; background:var(--overlay);
+  z-index:400; display:none; align-items:center; justify-content:center; flex-direction:column; gap:16px;
+}
+#loader.active{display:flex}
+.spinner{
+  width:44px;height:44px;border-radius:50%;
+  border:3.5px solid color-mix(in srgb,var(--accent) 25%, transparent);
+  border-top-color:var(--accent);
+  animation:spin .8s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loader-txt{color:#fff;font-size:13px;font-weight:600;letter-spacing:.5px}
+
+/* ═══════════════════════════════════════════════════
+   SCROLLBARS
+═══════════════════════════════════════════════════ */
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:8px}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ LOGIN SCREEN ═══════════════ -->
+<div id="loginScreen">
+  <div class="login-card">
+    <div class="login-brand">
+      <div class="brand-logo">SM</div>
+      <div style="text-align:center">
+        <div class="brand-title">ShahMultiplayer</div>
+        <div class="brand-sub">PI Image Scanner Portal</div>
+      </div>
+    </div>
+    <div class="field">
+      <label>Username</label>
+      <input type="text" id="loginUser" placeholder="Enter username" autocomplete="username" autocapitalize="off">
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <input type="password" id="loginPass" placeholder="Enter password" autocomplete="current-password">
+    </div>
+    <button class="primary-btn" id="loginBtn">🔓 LOGIN</button>
+    <div class="login-hint">Contact admin for account access</div>
+  </div>
+</div>
+
+<!-- ═══════════════ MAIN APP ═══════════════ -->
+<div id="mainApp" class="hidden">
+
+  <!-- HEADER -->
+  <header class="app-header">
+    <button class="icon-btn" id="menuBtn" aria-label="Menu">☰</button>
+    <div class="header-brand">
+      <div class="brand-logo sm">SM</div>
+      <div class="header-titles">
+        <div class="header-title">ShahMultiplayer</div>
+        <div class="header-sub">PI Image Scanner</div>
+      </div>
+    </div>
+    <button class="icon-btn" id="themeBtn" aria-label="Theme">🎨</button>
+    <div class="user-chip" id="userChip">
+      <span class="user-initial" id="headerInitial">·</span>
+      <span class="uname" id="headerName">—</span>
+    </div>
+  </header>
+
+  <!-- DRAWER -->
+  <div class="drawer-backdrop" id="drawerBackdrop"></div>
+  <aside class="drawer" id="drawer">
+    <div class="drawer-head">
+      <div class="brand-logo">SM</div>
+      <div class="brand-title">ShahMultiplayer</div>
+      <div class="brand-sub">PI Image Scanner Portal</div>
+    </div>
+    <nav class="drawer-nav">
+      <button class="nav-item active" data-tab="newEntry">
+        <span class="nav-icon">📸</span> New Entry
+      </button>
+      <button class="nav-item" data-tab="dataTable">
+        <span class="nav-icon">📋</span> Data Table
+      </button>
+    </nav>
+    <div class="drawer-foot">
+      <div class="user-card">
+        <div class="user-initial" id="drawerInitial">·</div>
+        <div style="min-width:0">
+          <div class="u-name" id="drawerName">—</div>
+          <div class="u-role" id="drawerRole">Role: —</div>
+        </div>
+      </div>
+      <button class="logout-btn" id="logoutBtn">🚪 Logout</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main>
+
+    <!-- ─── TAB 1: NEW ENTRY ─── -->
+    <section class="tab-panel active" id="tab-newEntry">
+      <div class="card">
+        <div class="card-title">👤 Person Info</div>
+        <div class="form-grid two">
+          <div class="field-inline">
+            <label>Person Name</label>
+            <input type="text" id="fPersonName" readonly>
+          </div>
+          <div class="field-inline">
+            <label>Login ID</label>
+            <input type="text" id="fLoginId" readonly>
+          </div>
+        </div>
+        <div class="field-inline" style="margin-top:12px">
+          <label>Blues / Goldline</label>
+          <select id="fBg">
+            <option value="">— Select Type —</option>
+            <option value="Blues">Blues</option>
+            <option value="Goldline">Goldline</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">
+          <span>📷 Documents</span>
+          <span class="chip" id="imgCount">0 / 5</span>
+        </div>
+        <div class="image-grid" id="imageGrid"></div>
+      </div>
+    </section>
+
+    <!-- ─── TAB 2: DATA TABLE ─── -->
+    <section class="tab-panel" id="tab-dataTable">
+      <div class="card">
+        <div class="card-title">
+          <span>📋 PI Data</span>
+          <span class="chip" id="rowCount">0</span>
+        </div>
+        <div class="refresh-row">
+          <button class="refresh-btn" id="refreshBtn">🔄 Refresh</button>
+        </div>
+        <div id="dataContainer"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- SAVE BAR (only for New Entry tab) -->
+  <div class="save-bar" id="saveBar">
+    <button class="save-btn" id="saveBtn">💾 SAVE ENTRY</button>
+  </div>
+
+</div>
+
+<!-- ═══════════════ MODALS ═══════════════ -->
+
+<!-- Image source picker -->
+<div class="modal" id="srcModal">
+  <div class="modal-box">
+    <div class="modal-title">Add Image</div>
+    <button class="source-btn" data-src="camera">
+      <div class="s-icon">📷</div>
+      <div class="s-txt">
+        <div>Take Photo</div>
+        <div class="s-sub">Open camera</div>
+      </div>
+    </button>
+    <button class="source-btn" data-src="gallery">
+      <div class="s-icon">🖼️</div>
+      <div class="s-txt">
+        <div>Upload from Gallery</div>
+        <div class="s-sub">Choose from device</div>
+      </div>
+    </button>
+    <button class="modal-cancel" data-close>Cancel</button>
+  </div>
+</div>
+
+<!-- Image viewer -->
+<div class="modal image-viewer" id="ivModal">
+  <button class="iv-close" data-close>✕</button>
+  <img id="ivImg" src="" alt="">
+  <a class="iv-open" id="ivOpen" href="#" target="_blank">🔗 Open in Drive</a>
+</div>
+
+<!-- Hidden file inputs -->
+<input type="file" accept="image/*" capture="environment" id="fileCamera" style="display:none">
+<input type="file" accept="image/*" multiple id="fileGallery" style="display:none">
+
+<!-- Loader & Toast -->
+<div id="loader"><div class="spinner"></div><div class="loader-txt" id="loaderTxt">Loading...</div></div>
+<div id="toastWrap"></div>
+
+<script>
+/* ═══════════════════════════════════════════════════
+   CONFIG — APNA APPS SCRIPT URL YAHAN DAALO
+═══════════════════════════════════════════════════ */
+var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxE1pD4ehRikFU1H_irSt033btRis7fqcVfDQDMMAd8Cvx6YC5nLsm3hesqdTGwr4dGuQ/exec";
+
+/* ═══════════════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════════════ */
+var SESSION_KEY = 'shah_pi_session';
+var THEME_KEY   = 'shah_pi_theme';
+var THEMES      = ['dark', 'light', 'ocean'];
+var MAX_IMAGES  = 5;
+var COMPRESS_MAX_DIM = 1280;
+var COMPRESS_QUALITY = 0.72;
+
+var images = [];       // array of base64 dataURLs
+var session = null;
+
+/* ═══════════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════════ */
+(function init(){
+  // theme
+  var savedTheme = localStorage.getItem(THEME_KEY) || 'dark';
+  applyTheme(savedTheme);
+
+  // session
+  var s = localStorage.getItem(SESSION_KEY);
+  if (s) {
+    try {
+      session = JSON.parse(s);
+      showMainApp();
+    } catch(e) {
+      localStorage.removeItem(SESSION_KEY);
+    }
+  }
+
+  // bind
+  document.getElementById('loginBtn').onclick = doLogin;
+  document.getElementById('loginPass').addEventListener('keydown', function(e){
+    if (e.key === 'Enter') doLogin();
+  });
+  document.getElementById('loginUser').addEventListener('keydown', function(e){
+    if (e.key === 'Enter') document.getElementById('loginPass').focus();
+  });
+
+  document.getElementById('menuBtn').onclick = openDrawer;
+  document.getElementById('drawerBackdrop').onclick = closeDrawer;
+  document.getElementById('themeBtn').onclick = cycleTheme;
+  document.getElementById('logoutBtn').onclick = doLogout;
+
+  document.querySelectorAll('.nav-item').forEach(function(btn){
+    btn.onclick = function(){
+      switchTab(btn.dataset.tab);
+      closeDrawer();
+    };
+  });
+
+  document.getElementById('saveBtn').onclick = saveEntry;
+  document.getElementById('refreshBtn').onclick = loadPiData;
+
+  // image source modal
+  document.querySelectorAll('#srcModal [data-src]').forEach(function(btn){
+    btn.onclick = function(){
+      var src = btn.dataset.src;
+      closeModal('srcModal');
+      if (src === 'camera') document.getElementById('fileCamera').click();
+      else document.getElementById('fileGallery').click();
+    };
+  });
+  document.querySelectorAll('#srcModal [data-close]').forEach(function(b){
+    b.onclick = function(){ closeModal('srcModal'); };
+  });
+  document.getElementById('fileCamera').onchange = onFilesPicked;
+  document.getElementById('fileGallery').onchange = onFilesPicked;
+
+  // image viewer
+  document.getElementById('ivModal').onclick = function(e){
+    if (e.target.id === 'ivModal' || e.target.hasAttribute('data-close')) {
+      closeModal('ivModal');
+      document.getElementById('ivImg').src = '';
+    }
+  };
+
+  renderImageGrid();
+})();
+
+/* ═══════════════════════════════════════════════════
+   THEME
+═══════════════════════════════════════════════════ */
+function applyTheme(name){
+  if (THEMES.indexOf(name) === -1) name = 'dark';
+  document.documentElement.setAttribute('data-theme', name);
+  localStorage.setItem(THEME_KEY, name);
+}
+function cycleTheme(){
+  var cur = document.documentElement.getAttribute('data-theme') || 'dark';
+  var idx = THEMES.indexOf(cur);
+  var next = THEMES[(idx + 1) % THEMES.length];
+  applyTheme(next);
+  toast('Theme: ' + next.charAt(0).toUpperCase() + next.slice(1), 'info', 1400);
+}
+
+/* ═══════════════════════════════════════════════════
+   DRAWER
+═══════════════════════════════════════════════════ */
+function openDrawer(){ document.body.classList.add('drawer-open'); }
+function closeDrawer(){ document.body.classList.remove('drawer-open'); }
+
+/* ═══════════════════════════════════════════════════
+   TABS
+═══════════════════════════════════════════════════ */
+function switchTab(name){
+  document.querySelectorAll('.nav-item').forEach(function(b){
+    b.classList.toggle('active', b.dataset.tab === name);
+  });
+  document.querySelectorAll('.tab-panel').forEach(function(p){
+    p.classList.remove('active');
+  });
+  document.getElementById('tab-' + name).classList.add('active');
+  document.getElementById('saveBar').style.display = (name === 'newEntry') ? 'block' : 'none';
+
+  if (name === 'dataTable') loadPiData();
+}
+
+/* ═══════════════════════════════════════════════════
+   LOGIN
+═══════════════════════════════════════════════════ */
+function doLogin(){
+  var u = document.getElementById('loginUser').value.trim();
+  var p = document.getElementById('loginPass').value;
+  if (!u || !p) { toast('Enter username & password', 'error'); return; }
+
+  var btn = document.getElementById('loginBtn');
+  btn.disabled = true; btn.textContent = '⏳ Logging in...';
+  showLoader('Verifying credentials...');
+
+  fetch(SCRIPT_URL + '?action=login&user=' + encodeURIComponent(u) + '&pass=' + encodeURIComponent(p),
+        { method:'GET', redirect:'follow' })
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      if (!data.success) {
+        toast(data.error || 'Login failed', 'error');
+        return;
+      }
+      session = {
+        person_name: data.person_name,
+        user_name:   data.user_name,
+        role:        data.role,
+        loginTime:   new Date().toISOString()
+      };
+      localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+      toast('Welcome, ' + session.person_name + '!', 'success');
+      document.getElementById('loginPass').value = '';
+      showMainApp();
+    })
+    .catch(function(err){
+      toast('Network error: ' + err.message, 'error');
+    })
+    .finally(function(){
+      btn.disabled = false; btn.textContent = '🔓 LOGIN';
+      hideLoader();
+    });
+}
+
+function doLogout(){
+  if (!confirm('Logout karna hai?')) return;
+  session = null;
+  localStorage.removeItem(SESSION_KEY);
+  images = [];
+  renderImageGrid();
+  document.getElementById('mainApp').classList.add('hidden');
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('fBg').value = '';
+  closeDrawer();
+  toast('Logged out', 'info');
+}
+
+function showMainApp(){
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('mainApp').classList.remove('hidden');
+
+  if (session) {
+    var initial = (session.person_name || '?').charAt(0).toUpperCase();
+    document.getElementById('headerInitial').textContent = initial;
+    document.getElementById('headerName').textContent = session.person_name;
+    document.getElementById('drawerInitial').textContent = initial;
+    document.getElementById('drawerName').textContent = session.person_name;
+    document.getElementById('drawerRole').textContent = 'Role: ' + session.role;
+
+    document.getElementById('fPersonName').value = session.person_name;
+    document.getElementById('fLoginId').value = session.user_name;
+  }
+}
+
+/* ═══════════════════════════════════════════════════
+   IMAGE HANDLING
+═══════════════════════════════════════════════════ */
+function renderImageGrid(){
+  var grid = document.getElementById('imageGrid');
+  grid.innerHTML = '';
+
+  for (var i = 0; i < MAX_IMAGES; i++) {
+    var tile = document.createElement('div');
+    tile.className = 'image-tile';
+
+    if (images[i]) {
+      tile.classList.add('filled');
+      var img = document.createElement('img');
+      img.src = images[i];
+      img.alt = 'Image ' + (i+1);
+      tile.appendChild(img);
+
+      var del = document.createElement('button');
+      del.className = 'img-del';
+      del.textContent = '✕';
+      del.dataset.idx = i;
+      del.onclick = function(e){
+        e.stopPropagation();
+        var idx = parseInt(this.dataset.idx);
+        images.splice(idx, 1);
+        renderImageGrid();
+      };
+      tile.appendChild(del);
+
+      var badge = document.createElement('div');
+      badge.className = 'img-badge';
+      badge.textContent = 'IMG ' + (i+1);
+      tile.appendChild(badge);
+
+      // click to preview
+      tile.onclick = (function(url){
+        return function(){ openImageViewer(url); };
+      })(images[i]);
+
+    } else if (i === images.length) {
+      tile.classList.add('add-tile');
+      tile.innerHTML = '<div class="add-plus">＋</div><div class="add-lbl">Add</div>';
+      tile.onclick = function(){ openModal('srcModal'); };
+    } else {
+      tile.classList.add('empty');
+    }
+
+    grid.appendChild(tile);
+  }
+
+  document.getElementById('imgCount').textContent = images.length + ' / ' + MAX_IMAGES;
+}
+
+function onFilesPicked(e){
+  var files = Array.from(e.target.files || []);
+  e.target.value = '';
+  if (!files.length) return;
+
+  var slotsLeft = MAX_IMAGES - images.length;
+  if (slotsLeft <= 0) { toast('Max ' + MAX_IMAGES + ' images', 'error'); return; }
+  files = files.slice(0, slotsLeft);
+
+  showLoader('Processing image' + (files.length > 1 ? 's' : '') + '...');
+
+  Promise.all(files.map(function(f){ return compressImage(f); }))
+    .then(function(results){
+      results.forEach(function(dataUrl){
+        if (images.length < MAX_IMAGES) images.push(dataUrl);
+      });
+      renderImageGrid();
+      if (files.length < (e.target.files || []).length) {
+        toast('Only ' + slotsLeft + ' slot(s) left — extra images skipped', 'info');
+      } else {
+        toast(files.length + ' image(s) added', 'success', 1500);
+      }
+    })
+    .catch(function(err){
+      toast('Image error: ' + err.message, 'error');
+    })
+    .finally(hideLoader);
+}
+
+function compressImage(file){
+  return new Promise(function(resolve, reject){
+    if (!file.type.match(/^image\//)) return reject(new Error('Not an image'));
+    var reader = new FileReader();
+    reader.onerror = function(){ reject(new Error('Read failed')); };
+    reader.onload = function(ev){
+      var img = new Image();
+      img.onerror = function(){ reject(new Error('Decode failed')); };
+      img.onload = function(){
+        var w = img.width, h = img.height;
+        if (w > h && w > COMPRESS_MAX_DIM) { h = Math.round(h * COMPRESS_MAX_DIM / w); w = COMPRESS_MAX_DIM; }
+        else if (h >= w && h > COMPRESS_MAX_DIM) { w = Math.round(w * COMPRESS_MAX_DIM / h); h = COMPRESS_MAX_DIM; }
+
+        var canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        var ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+
+        try {
+          var dataUrl = canvas.toDataURL('image/jpeg', COMPRESS_QUALITY);
+          resolve(dataUrl);
+        } catch(e) { reject(e); }
+      };
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function openImageViewer(url){
+  // try to extract Drive file ID for better preview
+  var m = String(url).match(/\/d\/([^\/]+)/);
+  var previewUrl = m ? ('https://drive.google.com/thumbnail?id=' + m[1] + '&sz=w1200') : url;
+  document.getElementById('ivImg').src = previewUrl;
+  document.getElementById('ivOpen').href = url;
+  openModal('ivModal');
+}
+
+/* ═══════════════════════════════════════════════════
+   SAVE ENTRY
+═══════════════════════════════════════════════════ */
+function saveEntry(){
+  if (!session) return;
+  var bg = document.getElementById('fBg').value;
+  if (!bg) { toast('Select Blues / Goldline', 'error'); return; }
+  if (!images.length) { toast('Add at least 1 image', 'error'); return; }
+
+  var btn = document.getElementById('saveBtn');
+  btn.disabled = true; btn.textContent = '⏳ Saving...';
+  showLoader('Uploading ' + images.length + ' image(s)...');
+
+  var payload = {
+    action: 'addPiEntry',
+    user: session.user_name,
+    bluesGoldline: bg,
+    images: images
+  };
+
+  fetch(SCRIPT_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify(payload),
+    redirect: 'follow'
+  })
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      if (!data.success) {
+        toast(data.error || 'Save failed', 'error', 4000);
+        return;
+      }
+      toast('✅ Saved! ID: ' + data.id, 'success', 3000);
+      // reset form
+      images = [];
+      renderImageGrid();
+      document.getElementById('fBg').value = '';
+    })
+    .catch(function(err){
+      toast('Network error: ' + err.message, 'error', 4000);
+    })
+    .finally(function(){
+      btn.disabled = false; btn.textContent = '💾 SAVE ENTRY';
+      hideLoader();
+    });
+}
+
+/* ═══════════════════════════════════════════════════
+   LOAD & RENDER DATA
+═══════════════════════════════════════════════════ */
+function loadPiData(){
+  if (!session) return;
+  var container = document.getElementById('dataContainer');
+  container.innerHTML = '<div class="empty-state">Loading...</div>';
+
+  fetch(SCRIPT_URL + '?action=getPiData&user=' + encodeURIComponent(session.user_name),
+        { method:'GET', redirect:'follow' })
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      if (!data.success) {
+        container.innerHTML = '<div class="empty-state">' + esc(data.error || 'Failed to load') + '</div>';
+        if (data.error && data.error.toLowerCase().indexOf('inactive') > -1) {
+          toast('Account inactive — logging out', 'error');
+          setTimeout(doLogout, 1500);
+        }
+        return;
+      }
+      renderDataTable(data.rows || []);
+    })
+    .catch(function(err){
+      container.innerHTML = '<div class="empty-state">Network error: ' + esc(err.message) + '</div>';
+    });
+}
+
+function renderDataTable(rows){
+  var c = document.getElementById('dataContainer');
+  document.getElementById('rowCount').textContent = rows.length;
+
+  if (!rows.length) {
+    c.innerHTML = '<div class="empty-state">No records yet</div>';
+    return;
+  }
+
+  var html = '';
+  for (var i = 0; i < rows.length; i++) {
+    var r = rows[i];
+    var imgUrls = [r.Image1, r.Image2, r.Image3, r.Image4, r.Image5].filter(function(u){ return u && u.trim(); });
+
+    var statusClass = '';
+    var st = String(r.Status || '').toLowerCase();
+    if (st.indexOf('done') > -1 || st.indexOf('complete') > -1) statusClass = 'done';
+    else if (st.indexOf('error') > -1 || st.indexOf('fail') > -1) statusClass = 'error';
+
+    var thumbs = '';
+    if (imgUrls.length) {
+      thumbs = imgUrls.map(function(u, idx){
+        var m = String(u).match(/\/d\/([^\/]+)/);
+        var thumb = m ? ('https://drive.google.com/thumbnail?id=' + m[1] + '&sz=w200') : u;
+        return '<button class="thumb-btn" data-url="' + esc(u) + '"><img src="' + esc(thumb) + '" alt="" onerror="this.style.display=\'none\';this.parentElement.textContent=\'📷\'"></button>';
+      }).join('');
+    } else {
+      thumbs = '<span class="no-img">No images</span>';
+    }
+
+    var linksHtml = '';
+    if (r.spreadsheet_link || r.pdf_link) {
+      linksHtml = '<div class="dc-links">';
+      if (r.spreadsheet_link) linksHtml += '<a class="link-btn" href="' + esc(r.spreadsheet_link) + '" target="_blank" rel="noopener">📊 Sheet</a>';
+      if (r.pdf_link) linksHtml += '<a class="link-btn" href="' + esc(r.pdf_link) + '" target="_blank" rel="noopener">📄 PDF</a>';
+      linksHtml += '</div>';
+    }
+
+    html +=
+      '<div class="data-card">' +
+        '<div class="dc-header">' +
+          '<div>' +
+            '<div class="dc-name">' + esc(r.Person_name || '—') + '</div>' +
+            '<div class="dc-id">' + esc(r.Id || '') + '</div>' +
+          '</div>' +
+          '<span class="status-chip ' + statusClass + '">' + esc(r.Status || 'Pending') + '</span>' +
+        '</div>' +
+        '<div class="dc-meta">' +
+          '<div class="meta-item"><span class="meta-lbl">Type</span><span>' + esc(r.BluesGoldline || '—') + '</span></div>' +
+          '<div class="meta-item"><span class="meta-lbl">Date</span><span>' + esc(r.Processed_at || '—') + '</span></div>' +
+        '</div>' +
+        '<div class="dc-images">' + thumbs + '</div>' +
+        linksHtml +
+      '</div>';
+  }
+  c.innerHTML = html;
+
+  // attach thumbnail clicks
+  c.querySelectorAll('.thumb-btn').forEach(function(btn){
+    btn.onclick = function(){ openImageViewer(btn.dataset.url); };
+  });
+}
+
+/* ═══════════════════════════════════════════════════
+   MODAL HELPERS
+═══════════════════════════════════════════════════ */
+function openModal(id){ document.getElementById(id).classList.add('active'); }
+function closeModal(id){ document.getElementById(id).classList.remove('active'); }
+
+/* ═══════════════════════════════════════════════════
+   LOADER & TOAST
+═══════════════════════════════════════════════════ */
+function showLoader(txt){
+  document.getElementById('loaderTxt').textContent = txt || 'Loading...';
+  document.getElementById('loader').classList.add('active');
+}
+function hideLoader(){ document.getElementById('loader').classList.remove('active'); }
+
+function toast(msg, type, dur){
+  type = type || 'info'; dur = dur || 2600;
+  var wrap = document.getElementById('toastWrap');
+  var el = document.createElement('div');
+  el.className = 'toast ' + type;
+  el.textContent = msg;
+  wrap.appendChild(el);
+  setTimeout(function(){
+    el.classList.add('out');
+    setTimeout(function(){ el.remove(); }, 220);
+  }, dur);
+}
+
+function esc(s){
+  return String(s == null ? '' : s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+</script>
+</body>
+</html>
